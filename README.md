@@ -1,6 +1,12 @@
 # RL_Castlevania
 
-https://retro.readthedocs.io/en/latest/getting_started.html
+REQUIREMENTS so far:
+  # TENSORFLOW
+    https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/install.html
+  # PYTHON 3.8.2
+  # retro-gym
+    https://retro.readthedocs.io/en/latest/getting_started.html
+
 
 
 video :
