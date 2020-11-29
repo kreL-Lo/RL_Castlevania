@@ -3,7 +3,7 @@ import retro
 import util 
 import numpy as np
 import matplotlib.pyplot as plt
-model = keras.models.load_model('models/CASTLE-8')
+model = keras.models.load_model('models/CASTLE-12')
 
 possible_actions = np.array(
     [[0,0,0, 0,0,0 ,1,0,0],#back_movement
@@ -41,7 +41,7 @@ while True:
     qs = get_qs(frame,model)
     action = np.argmax(qs)
     #d = model.predict(frame)
-    frame , rew,done,_ =  env.step(parse_action(0))
+    frame , rew,done,_ =  env.step(parse_action(action))
     #print(d)
     env.render()
 

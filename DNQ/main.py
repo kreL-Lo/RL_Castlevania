@@ -72,20 +72,21 @@ for episode in range(1,EPISODES):
     print(episode)
     while not done:
         if np.random.random()> EPSILON:
-            action = np.argmax(agent.get_qs(current_state))
+            #action = np.argmax(agent.get_qs(current_state))
+            qs = agent.get_qs(current_state)
+            action = np.argmax(qs)
+            print(qs,action)
+            #print(action)
         else :
             action = np.random.randint(0,nr_actions)
         new_state , rew, done,stats  = env.step(parse_action(action))
-        if int(stats['health']) <50:
-            rew -=50
+        if int(stats['health']) <50:    
+            rew -=500
             done = True
-        if action ==1:
-            rew+=10
-        if action ==0 :
-            rew-=10
+    
         if int(stats['health'])!=hp:
             hp = int(stats['health'])
-            rew -=50
+            rew -=100
 
         recorder[action]+=1
             
@@ -106,7 +107,6 @@ for episode in range(1,EPISODES):
         for x in recorder:
             sum1+=x
         d = [round(recorder[0]/sum1,2),round(recorder[1]/sum1,2),round(recorder[2]/sum1,2),round(recorder[3]/sum1,2)]
-        print(action,stats,episode,EPSILON,d)
 
     if EPSILON > MIN_EPSILON:
         EPSILON *= EPSILON_DECAY

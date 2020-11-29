@@ -1,12 +1,12 @@
 
 
 #ADDJUSTABLE VARIABLES
-MAX_MEM_SIZE =5000 # MEMORIA DEQUE-ULUI
-MINIBATCH_SIZE =120# NR DE BATCH-URI CARE LE IA LA FIT 
+MAX_MEM_SIZE =1000000# MEMORIA DEQUE-ULUI
+MINIBATCH_SIZE =64# NR DE BATCH-URI CARE LE IA LA FIT 
 MIN_REPLAY_MEMORY_SIZE =  1000  # CAND INCEPE SA IA LA FIT
-DISCOUNT = 0.90 # PT Q LEARNING 
+DISCOUNT = 0.90# PT Q LEARNING 
 UPDATE_TARGET_EVERY = 5 # CAND UPDATEAZA AL DOILEA MODEL 
-LR = 0.001
+LR =0.00025      
 
 import tensorflow as tf
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -102,7 +102,7 @@ class Agent:
             self.target_update_counter = 0
 
     def get_qs(self,state):
-        d  = self.model.predict(np.array(state).reshape(-1,*state.shape))
+        d  = self.model.predict(np.array(state).reshape((1,*state.shape)))
         #print(d)
         return d[0]
 
