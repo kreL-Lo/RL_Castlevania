@@ -2,10 +2,11 @@
 
 #ADDJUSTABLE VARIABLES
 MAX_MEM_SIZE =5000 # MEMORIA DEQUE-ULUI
-MINIBATCH_SIZE =30# NR DE BATCH-URI CARE LE IA LA FIT 
+MINIBATCH_SIZE =120# NR DE BATCH-URI CARE LE IA LA FIT 
 MIN_REPLAY_MEMORY_SIZE =  1000  # CAND INCEPE SA IA LA FIT
 DISCOUNT = 0.90 # PT Q LEARNING 
 UPDATE_TARGET_EVERY = 5 # CAND UPDATEAZA AL DOILEA MODEL 
+LR = 0.001
 
 import tensorflow as tf
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -19,6 +20,7 @@ if gpus:
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Activation,Dense,MaxPooling2D,Conv2D, Dropout,Flatten
 from collections import deque
+from tensorflow.keras.optimizers import Adam
 import numpy as np
 import random
 import time 
@@ -32,7 +34,7 @@ class Agent:
 
     def create_model(self,nr_actions,shape):
         model = Sequential()
-        model.add( Conv2D(16,kernel_size=8,strides=4,input_shape = shape) )
+        model.add( Conv2D(32,kernel_size=8,strides=8,input_shape = shape) )
         model.add(Activation("relu"))
         
         model.add(MaxPooling2D(2,2))
@@ -44,18 +46,21 @@ class Agent:
         model.add(Dropout(0.2))
         model.add(Flatten())
         model.add(Dense(64))
-        model.add(Dense(activation="linear",units = nr_actions))
-        model.compile(loss="mse",optimizer ="adam",metrics =['accuracy'])
+        model.add(Dense(activation="sigmoid",units = nr_actions))
+        adam = Adam(lr=LR)
+        model.compile(loss='categorical_crossentropy',optimizer=adam)
         return model
     def create_model_1(self,nr_actions,shape):
         model = Sequential()
         model.add( Conv2D(32,kernel_size=8,strides=4,input_shape = shape,activation="relu") )
         model.add( Conv2D(64,kernel_size=4,strides=4,activation="relu")   )
-        model.add( Conv2D(64,kernel_size=4,strides=4,activation="relu")   )
+        model.add( Conv2D(64,kernel_size=3,strides=3,activation="relu")   )
         model.add(Flatten())
         model.add(Dense(units=512))
-        model.add(Dense(activation="linear",units = nr_actions))
-        model.compile(loss="mse",optimizer ="adam",metrics =['accuracy'])
+        model.add(Activation('relu'))
+        model.add(Dense(activation="sigmoid",units = nr_actions))
+        adam = Adam(lr=LR)
+        model.compile(loss="categorical_crossentropy",optimizer =adam,metrics =['accuracy'])
         return model
     def update_replay_memory(self, frame):
         self.replay_memory.append(frame)
@@ -97,5 +102,7 @@ class Agent:
             self.target_update_counter = 0
 
     def get_qs(self,state):
-        return self.model.predict(np.array(state).reshape(-1,*state.shape)/255)[0]
+        d  = self.model.predict(np.array(state).reshape(-1,*state.shape))
+        #print(d)
+        return d[0]
 

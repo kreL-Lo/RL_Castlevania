@@ -3,7 +3,7 @@ import retro
 import util 
 import numpy as np
 import matplotlib.pyplot as plt
-model = keras.models.load_model('models/CASTLE-2')
+model = keras.models.load_model('models/CASTLE-8')
 
 possible_actions = np.array(
     [[0,0,0, 0,0,0 ,1,0,0],#back_movement
@@ -29,17 +29,20 @@ env = retro.make(game='Castlevania-Nes',state='Level1')
 env.reset()
 move_to_first_level(env)
 frame, rew,done,_  = env.step(parse_action(0))
+def get_qs(state,model):
+        d  = model.predict(np.array(state).reshape(-1,*state.shape))
+        #print(d)
+        return d[0]
 while True:
     
     frame  = util.preprocess_frame(frame)
     
     frame = frame.reshape(110,84,1)
-    print(frame.shape)
-    plt.imshow(frame)
-    plt.show()
-    d = model.predict(frame)
-    frame , rew,done,_ =  env.step(parse_action(parse_action(0)))
-    print(d)
+    qs = get_qs(frame,model)
+    action = np.argmax(qs)
+    #d = model.predict(frame)
+    frame , rew,done,_ =  env.step(parse_action(0))
+    #print(d)
     env.render()
 
 
