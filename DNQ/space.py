@@ -145,7 +145,7 @@ for episode in range(1,EPISODES):
         for x in recorder:
             sum1+=x
         d = [round(recorder[0]/sum1,2),round(recorder[1]/sum1,2),round(recorder[2]/sum1,2)]
-        print(stats,rew,action,qs,episode,d,EPSILON,step,qs1)
+        print(stats,rew,action,qs,episode,d,EPSILON,step,qs1,np.argmax(qs1))
         qs =0 
 
     if EPSILON > MIN_EPSILON:

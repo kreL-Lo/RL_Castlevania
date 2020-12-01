@@ -3,7 +3,7 @@
 #ADDJUSTABLE VARIABLES
 MAX_MEM_SIZE =1000000# MEMORIA DEQUE-ULUI
 MINIBATCH_SIZE =64# NR DE BATCH-URI CARE LE IA LA FIT 
-MIN_REPLAY_MEMORY_SIZE =  1000  # CAND INCEPE SA IA LA FIT
+MIN_REPLAY_MEMORY_SIZE =  100  # CAND INCEPE SA IA LA FIT
 DISCOUNT = 0.90# PT Q LEARNING 
 UPDATE_TARGET_EVERY = 5 # CAND UPDATEAZA AL DOILEA MODEL 
 LR =0.00025      
@@ -52,13 +52,17 @@ class Agent:
         return model
     def create_model_1(self,nr_actions,shape):
         model = Sequential()
-        model.add( Conv2D(32,kernel_size=8,strides=4,input_shape = shape,activation="relu") )
-        model.add( Conv2D(64,kernel_size=4,strides=4,activation="relu")   )
-        model.add( Conv2D(64,kernel_size=3,strides=3,activation="relu")   )
+        model.add( Conv2D(32,kernel_size=[8,8],strides=[4,4],input_shape = shape,padding='valid'))
+        model.add(Activation("elu"))
+        model.add( Conv2D(64,kernel_size=[4,4],strides=[2,2],padding='valid'))
+        model.add(Activation("elu"))
+        model.add( Conv2D(64,kernel_size=[3,3],strides=[2,2],padding='valid'))
+        model.add(Activation("elu"))
         model.add(Flatten())
         model.add(Dense(units=512))
-        model.add(Activation('relu'))
-        model.add(Dense(activation="sigmoid",units = nr_actions))
+        model.add(Activation('elu'))
+        model.add(Dense(units = nr_actions))
+        #model.add(Activation("sigmoid"))
         adam = Adam(lr=LR)
         model.compile(loss="categorical_crossentropy",optimizer =adam,metrics =['accuracy'])
         return model

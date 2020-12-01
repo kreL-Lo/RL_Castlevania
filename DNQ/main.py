@@ -16,7 +16,7 @@ import matplotlib.image as mpimg
 import util 
 
 
-env = retro.make(game='Castlevania-Nes',state='Level1')
+env = retro.make(game='SpaceInvaders-Atari2600')
 
 from Agent import Agent
 
@@ -26,12 +26,22 @@ EPSILON_DECAY = 0.98
 MIN_EPSILON = 0.001
 SHOW_PREVIEW = 50
 EPISODES = 20_000
+MAXSTEPTS = 10000
 
+'''
 possible_actions = np.array(
     [[0,0,0, 0,0,0 ,1,0,0],#back_movement :0
     [0,0,0, 0,0,0 ,0,1,0],#forward_movement :1
     [0,0,0, 0,0,0 ,0,0,1],#jump :2 
     [1,0,0, 0,0,0 ,0,0,0],#attack :3
+    ]
+)
+'''
+possible_actions = np.array(
+    [[0,0,0, 0,0,0 ,1,0,0],#back_movement :0
+    [0,0,0, 0,0,0 ,0,1,0],#forward_movement :1
+    #[0,0,0, 0,0,0 ,0,0,1],#jump :2 
+    [1,0,0, 0,0,0 ,0,0,0]#attack :3
     ]
 )
 nr_actions = len(possible_actions)
@@ -65,29 +75,24 @@ for episode in range(1,EPISODES):
     current_state = util.preprocess_frame(current_state)
     current_state = current_state.reshape(110,84,1)
     done = False
-    move_to_first_level(env)
+    #move_to_first_level(env)
     stats =''
     hp = 64
     recorder=[0,0,0,0]
     print(episode)
-    while not done:
+    while step<MAXSTEPTS and not done:
+        qs1 = agent.get_qs(current_state)
         if np.random.random()> EPSILON:
             #action = np.argmax(agent.get_qs(current_state))
             qs = agent.get_qs(current_state)
             action = np.argmax(qs)
             print(qs,action)
-            #print(action)
+    
         else :
             action = np.random.randint(0,nr_actions)
+        print(qs1, np.argmax(qs1),action,episode)
         new_state , rew, done,stats  = env.step(parse_action(action))
-        if int(stats['health']) <50:    
-            rew -=500
-            done = True
-    
-        if int(stats['health'])!=hp:
-            hp = int(stats['health'])
-            rew -=100
-
+        #env.render()
         recorder[action]+=1
             
         new_state = util.preprocess_frame(new_state)
@@ -113,6 +118,6 @@ for episode in range(1,EPISODES):
         EPSILON = max(MIN_EPSILON, EPSILON)
     
     if episode%2==0:
-        path = 'models/'+'CASTLE'+"-"+str(episode)
+        path = 'models/'+'SPACE'+"-"+str(episode)
         agent.model.save(path)
-    print(episode,episode_reward,stats)
+    print(episode,episode_reward,stats,d)
