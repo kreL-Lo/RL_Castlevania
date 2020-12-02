@@ -142,7 +142,7 @@ while episode<=EPISODES:
         else :
             action = np.random.randint(0,nr_actions)
         new_state , rew, done,stats  = env.step(parse_action(action))
-        if lives < stats['lives']:
+        if lives > stats['lives']:
             lives = stats['lives']
             rew -= 50 *cnt
             cnt +=1
