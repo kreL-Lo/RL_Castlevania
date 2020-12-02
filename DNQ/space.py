@@ -33,13 +33,13 @@ if os.path.exists('models'):
 
 if os.path.exists('runLog.txt'):
     os.remove('runLog.txt')
-    
+
 EPSILON = 1
 EPSILON_DECAY = 0.98
 MIN_EPSILON = 0.001
 SHOW_PREVIEW = 50
 EPISODES = 20_000
-MAXSTEPTS = 10_000
+MAXSTEPTS = 10
 
 
 possible_actions = np.array(
@@ -157,13 +157,7 @@ while episode<=EPISODES:
         recorder[action]+=1
         episode_reward += rew
         agent.train(done,step)
-        '''
-        except Exception e:
-            agent.model.save(saved_model)
-            agent.target_model.save(saved_target_model)
-            f1 = open('execution_save.txt','w')
-            f1.write(str(episode))
-            f1.close() '''
+    
 
 
         sum1 = 0
@@ -173,7 +167,7 @@ while episode<=EPISODES:
         if step %1000==1:
             print(stats,rew,action,qs,episode,d,EPSILON,step,qs1,np.argmax(qs1))
         qs =0 
-
+    print(EPSILON)
     if EPSILON > MIN_EPSILON:
         EPSILON *= EPSILON_DECAY
         EPSILON = max(MIN_EPSILON, EPSILON)
@@ -182,6 +176,7 @@ while episode<=EPISODES:
         path = 'models/'+'SPACE'+"-"+str(episode)
         agent.model.save(path)
         
+    
     
     end = time.time()
     des1 =round( end - start,2)

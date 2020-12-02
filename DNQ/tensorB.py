@@ -11,6 +11,7 @@ class ModifiedTensorBoard(TensorBoard):
         self.writer = tf.summary.create_file_writer(self.log_dir)
         self._log_write_dir = os.path.join(self.log_dir, name)
         self._train_dir = self.log_dir + '\\train'
+        self._train_step =
     # Overriding this method to stop creating default log writer
     def set_model(self, model):
         pass
