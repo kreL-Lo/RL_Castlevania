@@ -3,13 +3,14 @@ import retro
 import util 
 import numpy as np
 import matplotlib.pyplot as plt
+import random
 model = keras.models.load_model('models/CASTLE-12')
 
 possible_actions = np.array(
     [[0,0,0, 0,0,0 ,1,0,0],#back_movement
-    [0,0,0, 0,0,0 ,0,1,0],#forward_movement
-    [0,0,0, 0,0,0 ,0,0,1],#jump
-    [1,0,0, 0,0,0 ,0,0,0],#attack
+    [0,0,0, 0,0,0 ,0,1,0]#forward_movement
+    ,#[0,0,0, 0,0,0 ,0,0,1],#jump
+    [1,0,0, 0,0,0 ,0,0,0]#attack
     ]
 )
 print(possible_actions)
@@ -25,9 +26,9 @@ def move_to_first_level(env):
         env.render()
 
 
-env = retro.make(game='Castlevania-Nes',state='Level1')
+env = retro.make(game='SpaceInvaders-Atari2600')
 env.reset()
-move_to_first_level(env)
+#move_to_first_level(env)
 frame, rew,done,_  = env.step(parse_action(0))
 def get_qs(state,model):
         d  = model.predict(np.array(state).reshape(-1,*state.shape))
@@ -38,11 +39,11 @@ while True:
     frame  = util.preprocess_frame(frame)
     
     frame = frame.reshape(110,84,1)
-    qs = get_qs(frame,model)
-    action = np.argmax(qs)
+    #qs = get_qs(frame,model)
+    action =random.randint(0,nr_actions-1)
     #d = model.predict(frame)
-    frame , rew,done,_ =  env.step(parse_action(action))
-    #print(d)
+    frame , rew,done,stats =  env.step(parse_action(action))
+    print(stats)
     env.render()
 
 

@@ -14,7 +14,8 @@ import random
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import util 
-
+import time
+import math
 
 env = retro.make(game='SpaceInvaders-Atari2600')
 
@@ -28,7 +29,8 @@ EPSILON_DECAY = 0.98
 MIN_EPSILON = 0.001
 SHOW_PREVIEW = 50
 EPISODES = 20_000
-MAXSTEPTS = 10000
+MAXSTEPTS = 10_000
+f = open("runLog.txt","w")
 
 possible_actions = np.array(
     [[0,0,0, 0,0,0 ,1,0,0],#back_movement :0
@@ -105,14 +107,15 @@ for episode in range(1,EPISODES):
     current_state = env.reset()
     
     current_state, stacked_frames = stack_frames(stacked_frames, current_state, True)
-
+    start = time.time()
     done = False
     #move_to_first_level(env)
     stats =''
     hp = 64
     recorder=[0,0,0,0]
-    print(episode)
+    print("Begin episode: "+str(episode))
     qs=0
+    
     while step<MAXSTEPTS:
         qs1 = agent.get_qs(current_state)
         #print(qs1)
@@ -140,12 +143,11 @@ for episode in range(1,EPISODES):
         episode_reward += rew
         step +=1
         agent.train(step,done)
-
         sum1 = 0
         for x in recorder:
             sum1+=x
         d = [round(recorder[0]/sum1,2),round(recorder[1]/sum1,2),round(recorder[2]/sum1,2)]
-        print(stats,rew,action,qs,episode,d,EPSILON,step,qs1,np.argmax(qs1))
+        #print(stats,rew,action,qs,episode,d,EPSILON,step,qs1,np.argmax(qs1))
         qs =0 
 
     if EPSILON > MIN_EPSILON:
@@ -155,4 +157,11 @@ for episode in range(1,EPISODES):
     if episode%2==0:
         path = 'models/'+'SPACE'+"-"+str(episode)
         agent.model.save(path)
-    print(episode,episode_reward,stats)
+    
+    end = time.time()
+    des1 =round( end - start,2)
+    stringul = str(episode) +" , " +str(des1)+" , " + str(episode_reward) + " , "+ str(stats) +" , "+ str(d )
+    f.write(stringul)
+    print(episode,episode_reward,stats,des1)
+
+f.close()

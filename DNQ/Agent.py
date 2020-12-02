@@ -3,11 +3,11 @@
 #ADDJUSTABLE VARIABLES
 MAX_MEM_SIZE =1000000# MEMORIA DEQUE-ULUI
 MINIBATCH_SIZE =64# NR DE BATCH-URI CARE LE IA LA FIT 
-MIN_REPLAY_MEMORY_SIZE =  100  # CAND INCEPE SA IA LA FIT
+MIN_REPLAY_MEMORY_SIZE =  2000  # CAND INCEPE SA IA LA FIT
 DISCOUNT = 0.90# PT Q LEARNING 
 UPDATE_TARGET_EVERY = 5 # CAND UPDATEAZA AL DOILEA MODEL 
-LR =0.00025      
-
+LR =0.00001
+TAU =0.01
 import tensorflow as tf
 gpus = tf.config.experimental.list_physical_devices('GPU')
 if gpus:
@@ -27,10 +27,10 @@ import time
 
 class Agent:
     def __init__(self,nr_actions,shape): 
-        self.model = self.create_model_1(nr_actions,shape)
+        self.model = self.create_model_2(nr_actions,shape)
         self.replay_memory = deque(maxlen =MAX_MEM_SIZE)
         self.target_update_counter = 0 
-        self.target_model = self.create_model_1(nr_actions,shape)
+        self.target_model = self.create_model_2(nr_actions,shape)
 
     def create_model(self,nr_actions,shape):
         model = Sequential()
@@ -46,25 +46,41 @@ class Agent:
         model.add(Dropout(0.2))
         model.add(Flatten())
         model.add(Dense(64))
-        model.add(Dense(activation="sigmoid",units = nr_actions))
+        model.add(Dense(activation="elu",units = nr_actions))
         adam = Adam(lr=LR)
         model.compile(loss='categorical_crossentropy',optimizer=adam)
         return model
     def create_model_1(self,nr_actions,shape):
         model = Sequential()
         model.add( Conv2D(32,kernel_size=[8,8],strides=[4,4],input_shape = shape,padding='valid'))
-        model.add(Activation("elu"))
+        model.add(Activation("relu"))
         model.add( Conv2D(64,kernel_size=[4,4],strides=[2,2],padding='valid'))
-        model.add(Activation("elu"))
+        model.add(Activation("relu"))
         model.add( Conv2D(64,kernel_size=[3,3],strides=[2,2],padding='valid'))
-        model.add(Activation("elu"))
+        model.add(Activation("relu"))
         model.add(Flatten())
         model.add(Dense(units=512))
-        model.add(Activation('elu'))
+        model.add(Activation('relu'))
         model.add(Dense(units = nr_actions))
-        #model.add(Activation("sigmoid"))
+        model.add(Activation("relu"))
         adam = Adam(lr=LR)
-        model.compile(loss="categorical_crossentropy",optimizer =adam,metrics =['accuracy'])
+        model.compile(loss="mce",optimizer =adam,metrics =['accuracy'])
+        return model
+    def create_model_2(self,nr_actions,shape):
+        model = Sequential()
+        model.add( Conv2D(32,kernel_size=[8,8],strides=[4,4],input_shape = shape,padding='valid'))
+        model.add(Activation("relu"))
+        model.add( Conv2D(64,kernel_size=[4,4],strides=[2,2],padding='valid'))
+        model.add(Activation("relu"))
+        model.add( Conv2D(64,kernel_size=[3,3],strides=[2,2],padding='valid'))
+        model.add(Activation("relu"))
+        model.add(Flatten())
+        model.add(Dense(units=512))
+        model.add(Activation('relu'))
+        model.add(Dense(units = nr_actions))
+        model.add(Activation("relu"))
+        adam = Adam(lr=LR)
+        model.compile(loss="mse",optimizer =adam,metrics =['accuracy'])
         return model
     def update_replay_memory(self, frame):
         self.replay_memory.append(frame)
@@ -102,11 +118,16 @@ class Agent:
             self.target_update_counter +=1
 
         if self.target_update_counter > UPDATE_TARGET_EVERY:
-            self.target_model.set_weights(self.model.get_weights())
+            model_weights = self.model.get_weights()
+            target_model_weights = self.target_model.get_weights()
+            for i in range(len(model_weights)):
+                target_model_weights[i] = TAU * model_weights[i] + (1 - TAU) * target_model_weights[i]
+            self.target_model.set_weights(target_model_weights)
             self.target_update_counter = 0
 
     def get_qs(self,state):
         d  = self.model.predict(np.array(state).reshape((1,*state.shape)))
         #print(d)
         return d[0]
+
 

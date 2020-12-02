@@ -90,13 +90,13 @@ for episode in range(1,EPISODES):
     
         else :
             action = np.random.randint(0,nr_actions)
-        print(qs1, np.argmax(qs1),action,episode)
         new_state , rew, done,stats  = env.step(parse_action(action))
         #env.render()
         recorder[action]+=1
             
         new_state = util.preprocess_frame(new_state)
         
+        print(qs1, np.argmax(qs1),action,episode,rew)
         new_state = new_state.reshape(110,84,1)
         episode_reward += rew
         

@@ -10,6 +10,7 @@ from collections import deque# Ordered collection with ends
 import random
 
 import warnings
+
 stack_size = 4 # We stack 4 frames
 
 stacked_frames  =  deque([np.zeros((110,84), dtype=np.int) for i in range(stack_size)], maxlen=4)
