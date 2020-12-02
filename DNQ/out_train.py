@@ -4,7 +4,7 @@ import util
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-model = keras.models.load_model('models/SPACE-6')
+#model = keras.models.load_model('models/SPACE-6')
 
 possible_actions = np.array(
     [[0,0,0, 0,0,0 ,1,0,0],#back_movement
@@ -55,18 +55,19 @@ state, stacked_frames = stack_frames(stacked_frames, obs, False)
 
 
 
-qs = get_qs(state,model)
+#qs = get_qs(state,model)
 
 
 while not done:
     
 
-    qs = get_qs(state,model)
+    #qs = get_qs(state,model)
     #print(np.argmax(qs), qs)
-    action = np.argmax(qs)
+    #action = np.argmax(qs)
+    action = random.randint(0,len(possible_actions)-1)
     #d = model.predict(frame)
     state , rew,done,stats =  env.step(parse_action(action))
-    
+    print(stats)
     state, stacked_frames = stack_frames(stacked_frames, state, False)
     env.render()
 

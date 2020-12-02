@@ -127,6 +127,8 @@ while episode<=EPISODES:
     recorder=[0,0,0,0]
     print("Begin episode: "+str(episode))
     qs=0
+    lives = 3
+    cnt = 1 
     
     while step<MAXSTEPTS:
         qs1 = agent.get_qs(current_state)
@@ -140,7 +142,10 @@ while episode<=EPISODES:
         else :
             action = np.random.randint(0,nr_actions)
         new_state , rew, done,stats  = env.step(parse_action(action))
-
+        if lives > stats['lives']:
+            lives = stats['lives']
+            rew -= 50 *cnt
+            cnt +=1
         step +=1
         if step ==MAXSTEPTS:
             done = True
@@ -158,8 +163,6 @@ while episode<=EPISODES:
         episode_reward += rew
         agent.train(done,step)
     
-
-
         sum1 = 0
         for x in recorder:
             sum1+=x
@@ -177,7 +180,7 @@ while episode<=EPISODES:
         agent.model.save(path)
         
     
-    
+    cnt = 1
     end = time.time()
     des1 =round( end - start,2)
     stringul = str(episode) +" , " +str(des1)+" , " + str(episode_reward) + " , "+ str(stats) +" , "+ str(d ) +"\n"
