@@ -30,7 +30,7 @@ MIN_EPSILON = 0.001
 SHOW_PREVIEW = 50
 EPISODES = 20_000
 MAXSTEPTS = 10_000
-f = open("runLog.txt","w")
+
 
 possible_actions = np.array(
     [[0,0,0, 0,0,0 ,1,0,0],#back_movement :0
@@ -102,6 +102,7 @@ for i in range(MINIBATCH_SIZE):
         state = next_state
 
 for episode in range(1,EPISODES):
+    f = open("runLog.txt","a")
     episode_reward = 0
     step = 1
     current_state = env.reset()
@@ -147,7 +148,7 @@ for episode in range(1,EPISODES):
         for x in recorder:
             sum1+=x
         d = [round(recorder[0]/sum1,2),round(recorder[1]/sum1,2),round(recorder[2]/sum1,2)]
-        if step %100==1:
+        if step %1000==1:
             print(stats,rew,action,qs,episode,d,EPSILON,step,qs1,np.argmax(qs1))
         qs =0 
 
@@ -164,5 +165,4 @@ for episode in range(1,EPISODES):
     stringul = str(episode) +" , " +str(des1)+" , " + str(episode_reward) + " , "+ str(stats) +" , "+ str(d )
     f.write(stringul)
     print(episode,episode_reward,stats,des1)
-
-f.close()
+    f.close()
