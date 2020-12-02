@@ -1,14 +1,19 @@
 
 
 #ADDJUSTABLE VARIABLES
-MAX_MEM_SIZE =1000000# MEMORIA DEQUE-ULUI
+MAX_MEM_SIZE =10_000# MEMORIA DEQUE-ULUI
 MINIBATCH_SIZE =64# NR DE BATCH-URI CARE LE IA LA FIT 
-MIN_REPLAY_MEMORY_SIZE =  2000  # CAND INCEPE SA IA LA FIT
+MIN_REPLAY_MEMORY_SIZE =  1000  # CAND INCEPE SA IA LA FIT
 DISCOUNT = 0.90# PT Q LEARNING 
 UPDATE_TARGET_EVERY = 5 # CAND UPDATEAZA AL DOILEA MODEL 
+MODEL_NAME = "SPACE"
 LR =0.00001
 TAU =0.01
+print('Batch size is ',MINIBATCH_SIZE)
 import tensorflow as tf
+
+from tensorflow.keras.callbacks import TensorBoard
+#from tensorB import ModifiedTensorBoard
 gpus = tf.config.experimental.list_physical_devices('GPU')
 if gpus:
   try:
@@ -27,10 +32,13 @@ import time
 
 class Agent:
     def __init__(self,nr_actions,shape): 
+        self.counter = 1
         self.model = self.create_model_2(nr_actions,shape)
         self.replay_memory = deque(maxlen =MAX_MEM_SIZE)
         self.target_update_counter = 0 
         self.target_model = self.create_model_2(nr_actions,shape)
+        log_dir = f"logs/{MODEL_NAME}-{int(self.counter)}"
+        self.tensorboard = TensorBoard(log_dir=log_dir)
 
     def create_model(self,nr_actions,shape):
         model = Sequential()
@@ -112,10 +120,11 @@ class Agent:
             X.append(current_state)
             Y.append(current_qs)
         
-        self.model.fit(np.array(X), np.array(Y), batch_size=MINIBATCH_SIZE, verbose=0, shuffle=False)
+        self.model.fit(np.array(X), np.array(Y), batch_size=MINIBATCH_SIZE, verbose=0, shuffle=False,callbacks =[self.tensorboard] if terminal_step else None )
 
         if terminal_step:
             self.target_update_counter +=1
+            self.counter +=1
 
         if self.target_update_counter > UPDATE_TARGET_EVERY:
             model_weights = self.model.get_weights()

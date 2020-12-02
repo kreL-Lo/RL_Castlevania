@@ -7,6 +7,7 @@
 # alta solutie mai grea aici este a face noi enviromentu, la fiecare nivel sa anunte ca so terminat nivelul , si sa dam reward pentru power-uri...
 # apoi pentru fiecare nivel va fi antrenat un agent ca sa-l rezolve
 # sau este posibil sa termine cu un singur agent , idk that
+import shutil
 import json
 import numpy as np           
 import retro                 
@@ -16,21 +17,30 @@ import matplotlib.image as mpimg
 import util 
 import time
 import math
-
+import tensorflow as tf
 env = retro.make(game='SpaceInvaders-Atari2600')
 
 from Agent import Agent
 from Agent import MINIBATCH_SIZE
+import os
+
+if os.path.exists('logs'):
+    shutil.rmtree('logs')
 
 
+if os.path.exists('models'):
+    shutil.rmtree('models')
 
+if os.path.exists('runLog.txt'):
+    os.remove('runLog.txt')
+    
 EPSILON = 1
 EPSILON_DECAY = 0.98
 MIN_EPSILON = 0.001
 SHOW_PREVIEW = 50
 EPISODES = 20_000
 MAXSTEPTS = 10_000
-f = open("runLog.txt","w")
+
 
 possible_actions = np.array(
     [[0,0,0, 0,0,0 ,1,0,0],#back_movement :0
@@ -101,7 +111,9 @@ for i in range(MINIBATCH_SIZE):
         # Our new state is now the next_state
         state = next_state
 
-for episode in range(1,EPISODES):
+episode = 1
+while episode<=EPISODES:
+    f = open("runLog.txt","a")
     episode_reward = 0
     step = 1
     current_state = env.reset()
@@ -129,6 +141,9 @@ for episode in range(1,EPISODES):
             action = np.random.randint(0,nr_actions)
         new_state , rew, done,stats  = env.step(parse_action(action))
 
+        step +=1
+        if step ==MAXSTEPTS:
+            done = True
         if done :
             new_state = np.zeros((110,84), dtype=np.int)
             new_state, stacked_frames =stack_frames(stacked_frames,new_state,False)
@@ -141,13 +156,22 @@ for episode in range(1,EPISODES):
 
         recorder[action]+=1
         episode_reward += rew
-        step +=1
-        agent.train(step,done)
+        agent.train(done,step)
+        '''
+        except Exception e:
+            agent.model.save(saved_model)
+            agent.target_model.save(saved_target_model)
+            f1 = open('execution_save.txt','w')
+            f1.write(str(episode))
+            f1.close() '''
+
+
         sum1 = 0
         for x in recorder:
             sum1+=x
         d = [round(recorder[0]/sum1,2),round(recorder[1]/sum1,2),round(recorder[2]/sum1,2)]
-        #print(stats,rew,action,qs,episode,d,EPSILON,step,qs1,np.argmax(qs1))
+        if step %1000==1:
+            print(stats,rew,action,qs,episode,d,EPSILON,step,qs1,np.argmax(qs1))
         qs =0 
 
     if EPSILON > MIN_EPSILON:
@@ -157,11 +181,13 @@ for episode in range(1,EPISODES):
     if episode%2==0:
         path = 'models/'+'SPACE'+"-"+str(episode)
         agent.model.save(path)
+        
     
     end = time.time()
     des1 =round( end - start,2)
-    stringul = str(episode) +" , " +str(des1)+" , " + str(episode_reward) + " , "+ str(stats) +" , "+ str(d )
+    stringul = str(episode) +" , " +str(des1)+" , " + str(episode_reward) + " , "+ str(stats) +" , "+ str(d ) +"\n"
     f.write(stringul)
+    tf.keras.backend.clear_session()
     print(episode,episode_reward,stats,des1)
-
-f.close()
+    f.close()
+    episode+=1
