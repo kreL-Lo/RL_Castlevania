@@ -14,7 +14,7 @@ import random
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import util 
-
+import tensorflow as tf 
 
 env = retro.make(game='SpaceInvaders-Atari2600')
 
@@ -121,3 +121,4 @@ for episode in range(1,EPISODES):
         path = 'models/'+'SPACE'+"-"+str(episode)
         agent.model.save(path)
     print(episode,episode_reward,stats,d)
+    tf.keras.backend.clear_session()
