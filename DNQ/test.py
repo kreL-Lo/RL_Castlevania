@@ -7,7 +7,6 @@ f= [0.5,0.6,0.7]
 
 print(str(f))
 
-#f = open("runLog.txt","w")
-
-
-#f.close()
+for ep in range(0,5):
+    ep=2
+    print(ep)
