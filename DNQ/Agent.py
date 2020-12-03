@@ -31,14 +31,23 @@ import random
 import time 
 
 class Agent:
-    def __init__(self,nr_actions,shape): 
+    
+    def __init__(self,nr_actions,shape,path): 
+
         self.counter = 1
-        self.model = self.create_model_2(nr_actions,shape)
         self.replay_memory = deque(maxlen =MAX_MEM_SIZE)
         self.target_update_counter = 0 
-        self.target_model = self.create_model_2(nr_actions,shape)
         log_dir = f"logs/{MODEL_NAME}-{int(self.counter)}"
+        print('loaded model',path)
         self.tensorboard = TensorBoard(log_dir=log_dir)
+        if path == False:
+            self.model = self.create_model_2(nr_actions,shape)
+            self.target_model = self.create_model_2(nr_actions,shape)
+        else :
+            model = tf.keras.models.load_model(path)
+            self.model = tf.keras.models.clone_model(model)
+            self.target_model = tf.keras.models.clone_model(model)
+
 
     def create_model(self,nr_actions,shape):
         model = Sequential()

@@ -1,4 +1,5 @@
-import numpy as np           
+import numpy as np         
+import os   
 
 from skimage import transform # Help us to preprocess the frames
 from skimage.color import rgb2gray # Help us to gray our frames
@@ -57,3 +58,17 @@ def preprocess_frame(frame):
     preprocessed_frame = transform.resize(normalized_frame, [110,84])
     
     return preprocessed_frame # 110x84x1 frame
+
+def get_best_folder():
+    
+    path ='.\\models'
+    if os.path.exists('models')== False:
+        return False
+    d = os.listdir(path)
+    if d == 0 :
+        return False
+    f1 =[ w.split('-') for w in d]
+    f1.sort( key = lambda x : x[1],reverse=True)
+    path= os.getcwd()+'\\models' +'\\'+f1[0][0]+'-'+f1[0][1]
+    return {'path':path,'episode':f1[0][1]}
+    

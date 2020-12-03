@@ -23,7 +23,7 @@ env = retro.make(game='SpaceInvaders-Atari2600')
 from Agent import Agent
 from Agent import MINIBATCH_SIZE
 import os
-
+'''
 if os.path.exists('logs'):
     shutil.rmtree('logs')
 
@@ -33,7 +33,7 @@ if os.path.exists('models'):
 
 if os.path.exists('runLog.txt'):
     os.remove('runLog.txt')
-
+'''
 EPSILON = 1
 EPSILON_DECAY = 0.98
 MIN_EPSILON = 0.001
@@ -56,7 +56,23 @@ get_frame = util.preprocess_frame(b)
 
 print(util.stack_frames,'sfsdfasdf')
 shape = (110,84,4)
-agent = Agent(nr_actions,shape)
+
+path = util.get_best_folder()
+print(path,'sdfasdf')
+if path != False:
+    episode =int(path['episode'])
+    path = path['path'] 
+    for i in range(episode):
+        if EPSILON > MIN_EPSILON:
+                EPSILON *= EPSILON_DECAY
+                EPSILON = max(MIN_EPSILON, EPSILON)
+    episode +=1
+else :
+    episode =1
+
+
+agent = Agent(nr_actions,shape,path)
+
 
 
 
@@ -111,7 +127,6 @@ for i in range(MINIBATCH_SIZE):
         # Our new state is now the next_state
         state = next_state
 
-episode = 1
 while episode<=EPISODES:
     f = open("runLog.txt","a")
     episode_reward = 0
