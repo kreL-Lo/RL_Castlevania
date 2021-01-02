@@ -110,7 +110,6 @@ for i in range(MINIBATCH_SIZE):
     if done:
         # We finished the episode
         next_state = np.zeros(state.shape)
-        
         # Add experience to memory
         agent.update_replay_memory((state, action, reward, next_state, done))
         
@@ -148,7 +147,7 @@ while episode<=EPISODES:
     while step<MAXSTEPTS:
         qs1 = agent.get_qs(current_state)
         #print(qs1)
-        if np.random.random()> EPSILON:
+        if np.random.random() > EPSILON:
             #action = np.argmax(agent.get_qs(current_state))
             qs = agent.get_qs(current_state)
             action = np.argmax(qs)
@@ -191,7 +190,7 @@ while episode<=EPISODES:
         EPSILON = max(MIN_EPSILON, EPSILON)
     
     if episode%2==0:
-        path = 'models/'+'SPACE'+"-"+str(episode)
+        path = './models/'+'SPACE'+"-"+str(episode)
         agent.model.save(path)
         
     
