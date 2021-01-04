@@ -36,7 +36,10 @@ class Agent:
         else:
             model = tf.keras.models.load_model(save_path)
             self.model = tf.keras.models.clone_model(model)
+            adam = Adam(lr=self.learning_rate)
+            self.model.compile(loss="mse", optimizer=adam, metrics=['accuracy'])
             self.target_model = tf.keras.models.clone_model(model)
+            self.target_model.compile(loss="mse", optimizer=adam, metrics=['accuracy'])
 
     def create_model(self):
         model = Sequential()

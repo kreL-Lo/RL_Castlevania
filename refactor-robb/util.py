@@ -62,10 +62,11 @@ def get_best_folder():
     if d == 0 :
         return False
     f1 =[ w.split('-') for w in d]
-    f1.sort( key = lambda x : x[1],reverse=True)
+    f1.sort( key = lambda x : int(x[1]) ,reverse=True)
 
     if f1:
         path= os.getcwd()+'\\models' +'\\'+f1[0][0]+'-'+f1[0][1]
+        print(path)
         return {'path': path, 'episode': f1[0][1]}
     else:
         path = False

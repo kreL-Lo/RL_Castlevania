@@ -126,7 +126,7 @@ if __name__ == '__main__':
             str(current_episode), str(agent.epsilon), str(score), str(end_time - start_time))
 
         with open('runlog.txt', 'a') as f:
-            f.write(log)
+            f.write(log + '\n')
             f.close()
 
         tf.keras.backend.clear_session()
