@@ -152,6 +152,7 @@ def main():
                 if step % 1000 == 0:
                     print('saving %d/%d' % (step, len(recorded_actions)))
                 env.step(act)
+                # print(act)
             env.stop_record()
             print('complete')
             sys.exit(1)
@@ -168,16 +169,18 @@ def main():
             'DOWN': keycodes.DOWN in keys_pressed or buttoncodes.D_DOWN in buttons_pressed,
             'LEFT': keycodes.LEFT in keys_pressed or buttoncodes.D_LEFT in buttons_pressed,
             'RIGHT': keycodes.RIGHT in keys_pressed or buttoncodes.D_RIGHT in buttons_pressed,
-            'SELECT': keycodes.SELECT,
+            'SELECT': keycodes.SELECT in keys_pressed,
             'MODE': keycodes.TAB in keys_pressed or buttoncodes.SELECT in buttons_pressed,
             'START': keycodes.ENTER in keys_pressed or buttoncodes.START in buttons_pressed,
             None: keycodes.SPACE,
         }
+        
         action = [inputs[b] for b in env.buttons]
-
+        print(keys_pressed)
         if steps % SAVE_PERIOD == 0:
             recorded_states.append((steps, env.em.get_state()))
         obs, rew, done, info = env.step(action)
+        print(action)
         recorded_actions.append(action)
         steps += 1
 
