@@ -27,12 +27,12 @@ if __name__ == '__main__':
         env.render()
 
     folder = get_best_folder()
-
     if folder['path'] is not False:
         path = folder['path']
     else:
         path = False
 
+    # path = "C:\\Users\\rober\\Documents\\GitHub\\RL_Castlevania\\refactor-robb\\models\\CASTLE-88"
     agent = Agent(stack_shape, path, action_number)
     agent.epsilon = agent.epsilon_min
     stacked_frames = deque([np.zeros((110, 84), dtype=np.int) for i in range(stack_size)], maxlen=stack_size)
@@ -42,6 +42,7 @@ if __name__ == '__main__':
     while not done:
         action_index = agent.act(state)
         next_state, reward, done, stats = env.step(possible_actions[action_index])
+        print("STATS: " + str(stats))
         next_state, stacked_frames = stack_frames(stacked_frames, next_state, False)
         env.render()
         state = next_state

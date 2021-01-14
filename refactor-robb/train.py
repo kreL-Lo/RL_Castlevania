@@ -35,6 +35,7 @@ if __name__ == '__main__':
         path = False
         current_episode = 1
 
+
     agent = Agent(stack_shape, path, action_number)
 
     if path is not False:
@@ -77,7 +78,7 @@ if __name__ == '__main__':
         start_time = time.time()
         done = False
         hp = 64
-        lives = 3
+        lives = 4
         # moving to first level
         action_index = 1  # move forward
         for i in range(850):
@@ -90,10 +91,18 @@ if __name__ == '__main__':
             step += 1
             env.render()
 
+            # adjusting the reward if the player moves right
+            if action_index == 1:
+                reward += 1
+
+            if stats['health'] < hp:
+                reward -= 5
+                hp = stats['health']
+
             # adjusting the reward if the player has just lost a life
             if lives > stats['lives']:
                 lives = stats['lives']
-                reward -= 1
+                reward -= 10
 
             if step == max_steps:
                 done = True

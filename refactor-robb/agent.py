@@ -89,7 +89,7 @@ class Agent:
             model_weights = self.model.get_weights()
             target_model_weights = self.target_model.get_weights()
             for i in range(len(model_weights)):
-                target_model_weights[i] = self.tau * model_weights[i] + (1 - self.tau) * target_model_weights[i]
+                target_model_weights[i] = (1 - self.tau) * model_weights[i] + self.tau * target_model_weights[i]
             self.target_model.set_weights(target_model_weights)
 
             self.target_model_counter = 0
