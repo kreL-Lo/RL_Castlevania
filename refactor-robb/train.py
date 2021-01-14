@@ -35,7 +35,6 @@ if __name__ == '__main__':
         path = False
         current_episode = 1
 
-
     agent = Agent(stack_shape, path, action_number)
 
     if path is not False:
@@ -47,17 +46,19 @@ if __name__ == '__main__':
         current_episode += 1
 
     # performing random actions in order to fill the replay memory with minibatch_size states
-    stacked_frames = deque([np.zeros((110, 84), dtype=np.int) for i in range(stack_size)], maxlen=stack_size)
+    stacked_frames = deque([np.zeros((110, 84), dtype=np.int)
+                            for i in range(stack_size)], maxlen=stack_size)
 
     for i in range(agent.minibatch_size):
         if i == 0:
             state = env.reset()
-            state, stacked_frames = stack_frames(stacked_frames, state, True)
+            stafte, stacked_frames = stack_frames(stacked_frames, state, True)
 
         choice = np.random.randint(0, action_number)
         action = possible_actions[choice]
         next_state, reward, done, _ = env.step(action)
-        next_state, stacked_frames = stack_frames(stacked_frames, next_state, False)
+        next_state, stacked_frames = stack_frames(
+            stacked_frames, next_state, False)
 
         if done:
             next_state = env.reset()
@@ -87,7 +88,8 @@ if __name__ == '__main__':
 
         while step < max_steps and done is False:
             action_index = agent.act(state)
-            next_state, reward, done, stats = env.step(possible_actions[action_index])
+            next_state, reward, done, stats = env.step(
+                possible_actions[action_index])
             step += 1
             env.render()
 
@@ -110,7 +112,8 @@ if __name__ == '__main__':
             if done:
                 next_state = env.reset()
 
-            next_state, stacked_frames = stack_frames(stacked_frames, next_state, False)
+            next_state, stacked_frames = stack_frames(
+                stacked_frames, next_state, False)
             agent.remember(state, action_index, reward, next_state, done)
             state = next_state
 

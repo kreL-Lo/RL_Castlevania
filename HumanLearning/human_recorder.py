@@ -41,7 +41,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--game', help='retro game to use')
     parser.add_argument('--state', help='retro state to start from')
-    parser.add_argument('--scenario', help='scenario to use', default='scenario')
+    parser.add_argument(
+        '--scenario', help='scenario to use', default='scenario')
     args = parser.parse_args()
 
     if args.game is None:
@@ -58,7 +59,8 @@ def main():
             print(state)
         sys.exit(1)
 
-    env = retro.make(game=args.game, state=args.state, use_restricted_actions=retro.Actions.ALL, scenario=args.scenario)
+    env = retro.make(game=args.game, state=args.state,
+                     use_restricted_actions=retro.Actions.ALL, scenario=args.scenario)
     obs = env.reset()
     screen_height, screen_width = obs.shape[:2]
 
@@ -105,7 +107,8 @@ def main():
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, screen_width, screen_height, 0, GL_RGB, GL_UNSIGNED_BYTE, None)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, screen_width,
+                 screen_height, 0, GL_RGB, GL_UNSIGNED_BYTE, None)
 
     while not win.has_exit:
         win.dispatch_events()
@@ -145,7 +148,8 @@ def main():
             # record all the actions so far to a bk2 and exit
             i = 0
             while True:
-                movie_filename = 'human/%s/%s/%s-%s-%04d.bk2' % (args.game, args.scenario, args.game, args.state, i)
+                movie_filename = 'human/%s/%s/%s-%s-%04d.bk2' % (
+                    args.game, args.scenario, args.game, args.state, i)
                 if not os.path.exists(movie_filename):
                     break
                 i += 1
@@ -178,6 +182,8 @@ def main():
             None: keycodes.SPACE,
         }
         action = [inputs[b] for b in env.buttons]
+        print("ACTIONS: " + str(action ==
+                                [True, 32, 65376, False, False, False, False, False, False]))
 
         if steps % SAVE_PERIOD == 0:
             recorded_states.append((steps, env.em.get_state()))
@@ -186,8 +192,10 @@ def main():
         steps += 1
 
         glBindTexture(GL_TEXTURE_2D, texture_id)
-        video_buffer = ctypes.cast(obs.tobytes(), ctypes.POINTER(ctypes.c_short))
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, obs.shape[1], obs.shape[0], GL_RGB, GL_UNSIGNED_BYTE, video_buffer)
+        video_buffer = ctypes.cast(
+            obs.tobytes(), ctypes.POINTER(ctypes.c_short))
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
+                        obs.shape[1], obs.shape[0], GL_RGB, GL_UNSIGNED_BYTE, video_buffer)
 
         x = 0
         y = 0
