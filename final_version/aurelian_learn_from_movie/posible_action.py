@@ -1,0 +1,113 @@
+import numpy as np
+temp_dict = {}
+temp_dict['B','DOWN']=13
+temp_dict['UP','LEFT']= 12 # up left 
+temp_dict['UP','RIGHT']= 11  # up right
+temp_dict['DOWN','LEFT']= 10 # down left move 
+temp_dict['DOWN','RIGHT']= 9  # down right move 
+temp_dict['A','LEFT']=8 #jump  left
+temp_dict['A','RIGHT']=7 #jump  right
+temp_dict['A'] = 6 # jump 
+temp_dict['B'] = 5 # attack 
+temp_dict['DOWN'] =4 
+temp_dict['UP'] = 3 
+temp_dict['RIGHT'] = 2
+temp_dict['LEFT'] = 1
+temp_dict['NOOP'] = 0
+ret_dict = {} 
+action_parse={}
+action_parse[temp_dict['UP','LEFT']]=[False,True,False,True,False,False]
+action_parse[temp_dict['UP','RIGHT']]=[False,True,False,False,True,False]
+action_parse[temp_dict['DOWN','LEFT']] =[False,False,True,True,False,False]
+action_parse[temp_dict['DOWN','RIGHT']] =[False,False,True,False,True,False]
+action_parse[temp_dict['A','LEFT']] =[False,False,False,True,False,True]
+action_parse[temp_dict['A','RIGHT']] =[False,False,False,False,True,True]
+action_parse[temp_dict['A']] =[False,False,False,False,False,True]
+action_parse[temp_dict['B']] =[True,False,False,False,False,False]
+action_parse[temp_dict['B','DOWN']] =[True,False,True,False,False,False]
+action_parse[temp_dict['DOWN']] =[False,False,True,False,False,False]
+action_parse[temp_dict['UP']] =[False,True,False,False,False,False]
+action_parse[temp_dict['RIGHT']] =[False,False,False,False,True,False]
+action_parse[temp_dict['LEFT']] =[False,False,False,True,False,False]
+action_parse[temp_dict['NOOP']] =[False,False,False,False,False,False]
+print(action_parse[0])
+def action_to_array(value):
+    v1 = action_parse[value]
+    vec = np.zeros((9))
+    vec[0] = v1[0]
+    vec[4]=v1[1]
+    vec[5]=v1[2]
+    vec[6]=v1[3]
+    vec[7]=v1[4]
+    vec[8]=v1[5]
+    return vec
+
+
+def define_action_dict():
+    
+    # B ,UP,DOWN,LEFT,RIGHT,A
+    ret_dict[( False , False , False , False , False , False )] = temp_dict['NOOP']
+    ret_dict[( False , False , False , False , False , True )] = temp_dict['A']
+    ret_dict[( False , False , False , False , True , False )] =temp_dict['RIGHT']
+    ret_dict[( False , False , False , False , True , True )] =temp_dict['A','RIGHT']
+    ret_dict[( False , False , False , True , False , False )] =temp_dict['LEFT']
+    ret_dict[( False , False , False , True , False , True )] =temp_dict['A','LEFT']
+    ret_dict[( False , False , False , True , True , False )] =temp_dict['RIGHT']
+    ret_dict[( False , False , False , True , True , True )] =temp_dict['A','RIGHT']
+    ret_dict[( False , False , True , False , False , False )] =temp_dict['DOWN']
+    ret_dict[( False , False , True , False , False , True )] =temp_dict['DOWN']
+    ret_dict[( False , False , True , False , True , False )] =temp_dict['DOWN','RIGHT']
+    ret_dict[( False , False , True , False , True , True )] =temp_dict['DOWN','RIGHT']
+    ret_dict[( False , False , True , True , False , False )] =temp_dict['DOWN','LEFT']
+    ret_dict[( False , False , True , True , False , True )] =temp_dict['DOWN','LEFT']
+    ret_dict[( False , False , True , True , True , False )] =temp_dict['DOWN','RIGHT']
+    ret_dict[( False , False , True , True , True , True )] =temp_dict['DOWN','RIGHT']
+    ret_dict[( False , True , False , False , False , False )] =temp_dict['UP']
+    ret_dict[( False , True , False , False , False , True )] =temp_dict['A']
+    ret_dict[( False , True , False , False , True , False )] =temp_dict['UP','RIGHT']
+    ret_dict[( False , True , False , False , True , True )] =temp_dict['A','RIGHT']
+    ret_dict[( False , True , False , True , False , False )] =temp_dict['UP','LEFT']
+    ret_dict[( False , True , False , True , False , True )] =temp_dict['A','LEFT']
+    ret_dict[( False , True , False , True , True , False )] =  temp_dict['UP','RIGHT']
+    ret_dict[( False , True , False , True , True , True )] =temp_dict['UP','RIGHT']
+    ret_dict[( False , True , True , False , False , False )] =temp_dict['DOWN']
+    ret_dict[( False , True , True , False , False , True )] =  temp_dict['DOWN']
+    ret_dict[( False , True , True , False , True , False )] =temp_dict['DOWN','RIGHT']
+    ret_dict[( False , True , True , False , True , True )] =temp_dict['DOWN','RIGHT']
+    ret_dict[( False , True , True , True , False , False )] =temp_dict['DOWN','LEFT']
+    ret_dict[( False , True , True , True , False , True )] =temp_dict['DOWN','LEFT']
+    ret_dict[( False , True , True , True , True , False )] =temp_dict['DOWN','RIGHT']
+    ret_dict[( False , True , True , True , True , True )] =temp_dict['DOWN','RIGHT']
+    ret_dict[( True , False , False , False , False , False )] =temp_dict['B']
+    ret_dict[( True , False , False , False , False , True )] =temp_dict['B']
+    ret_dict[( True , False , False , False , True , False )] =temp_dict['B']
+    ret_dict[( True , False , False , False , True , True )] =temp_dict['B']
+    ret_dict[( True , False , False , True , False , False )] =temp_dict['B']
+    ret_dict[( True , False , False , True , False , True )] =temp_dict['B']
+    ret_dict[( True , False , False , True , True , False )] =temp_dict['B']
+    ret_dict[( True , False , False , True , True , True )] =temp_dict['B']
+    ret_dict[( True , False , True , False , False , False )] = temp_dict['B','DOWN']
+    ret_dict[( True , False , True , False , False , True )] = temp_dict['B','DOWN']
+    ret_dict[( True , False , True , False , True , False )] =temp_dict['B','DOWN']
+    ret_dict[( True , False , True , False , True , True )] =temp_dict['B','DOWN']
+    ret_dict[( True , False , True , True , False , False )] =temp_dict['B','DOWN']
+    ret_dict[( True , False , True , True , False , True )] =temp_dict['B','DOWN']
+    ret_dict[( True , False , True , True , True , False )] =temp_dict['B','DOWN']
+    ret_dict[( True , False , True , True , True , True )] =temp_dict['B','DOWN']
+    ret_dict[( True , True , False , False , False , False )] =temp_dict['B']
+    ret_dict[( True , True , False , False , False , True )] =temp_dict['B']
+    ret_dict[( True , True , False , False , True , False )] =temp_dict['B']
+    ret_dict[( True , True , False , False , True , True )] =temp_dict['B']
+    ret_dict[( True , True , False , True , False , False )] =temp_dict['B']
+    ret_dict[( True , True , False , True , False , True )] =temp_dict['B']
+    ret_dict[( True , True , False , True , True , False )] =temp_dict['B']
+    ret_dict[( True , True , False , True , True , True )] =temp_dict['B']
+    ret_dict[( True , True , True , False , False , False )] =temp_dict['B']
+    ret_dict[( True , True , True , False , False , True )] =temp_dict['B']
+    ret_dict[( True , True , True , False , True , False )] =temp_dict['B']
+    ret_dict[( True , True , True , False , True , True )] =temp_dict['B']
+    ret_dict[( True , True , True , True , False , False )] =temp_dict['B']
+    ret_dict[( True , True , True , True , False , True )] =temp_dict['B']
+    ret_dict[( True , True , True , True , True , False )] =temp_dict['B']
+    ret_dict[( True , True , True , True , True , True )] =temp_dict['B']
+    return ret_dict

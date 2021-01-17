@@ -81,6 +81,10 @@ if __name__ == '__main__':
         hp = 64
         lives = 4
         # moving to first level
+        action_index = 1  # move forward
+        for i in range(850):
+            env.step(possible_actions[action_index])
+            env.render()
 
         while step < max_steps and done is False:
             action_index = agent.act(state)
